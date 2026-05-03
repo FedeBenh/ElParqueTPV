@@ -34,14 +34,55 @@ export default function ArticuloEditClient({ id }: { id: string }) {
     <div>
       <h2 className="text-2xl font-semibold mb-4">Editar artículo</h2>
       <form onSubmit={save} className="grid grid-cols-2 gap-4 max-w-2xl">
-        <input value={form.codigo || ''} onChange={(e) => setForm({ ...form, codigo: e.target.value })} className="border p-2 rounded" />
-        <input value={form.nombre || ''} onChange={(e) => setForm({ ...form, nombre: e.target.value })} className="border p-2 rounded" />
-        <input value={form.categoria || ''} onChange={(e) => setForm({ ...form, categoria: e.target.value })} className="border p-2 rounded" />
-        <input value={form.descripcion || ''} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} className="border p-2 rounded" />
-        <input type="number" step="0.01" value={Number(form.precioCompra)} onChange={(e) => setForm({ ...form, precioCompra: Number(e.target.value) })} className="border p-2 rounded" />
-        <input type="number" step="0.01" value={Number(form.precioVenta)} onChange={(e) => setForm({ ...form, precioVenta: Number(e.target.value) })} className="border p-2 rounded" />
-        <input type="number" value={Number(form.stockActual)} onChange={(e) => setForm({ ...form, stockActual: Number(e.target.value) })} className="border p-2 rounded" />
-        <input type="number" value={Number(form.stockMinimo)} onChange={(e) => setForm({ ...form, stockMinimo: Number(e.target.value) })} className="border p-2 rounded" />
+        <div>
+          <label className="block text-sm mb-1">Código</label>
+          <input value={form.codigo || ''} onChange={(e) => setForm({ ...form, codigo: e.target.value })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Nombre</label>
+          <input value={form.nombre || ''} onChange={(e) => setForm({ ...form, nombre: e.target.value })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Categoría</label>
+          <input value={form.categoria || ''} onChange={(e) => setForm({ ...form, categoria: e.target.value })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Descripción</label>
+          <input value={form.descripcion || ''} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Precio compra</label>
+          <input type="number" step="0.01" value={Number(form.precioCompra)} onChange={(e) => setForm({ ...form, precioCompra: Number(e.target.value) })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Precio venta</label>
+          <input type="number" step="0.01" value={Number(form.precioVenta)} onChange={(e) => setForm({ ...form, precioVenta: Number(e.target.value) })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Stock actual</label>
+          <input type="number" value={Number(form.stockActual)} onChange={(e) => setForm({ ...form, stockActual: Number(e.target.value) })} className="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Stock mínimo</label>
+          <input type="number" value={Number(form.stockMinimo)} onChange={(e) => setForm({ ...form, stockMinimo: Number(e.target.value) })} className="border p-2 rounded w-full" />
+        </div>
+
+        <div className="col-span-2">
+          <label className="block text-sm mb-1">URL de la imagen</label>
+          <input value={form.imagenUrl || ''} onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })} className="border p-2 rounded w-full mb-2" />
+          <label className="block text-sm mb-1">O subir imagen</label>
+          <input type="file" accept="image/*" onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            const reader = new FileReader()
+            reader.onload = () => {
+              const dataUrl = String(reader.result || '')
+              setForm((f: any) => ({ ...f, imagenUrl: dataUrl }))
+            }
+            reader.readAsDataURL(file)
+          }} className="w-full mb-2" />
+          {form.imagenUrl ? <img src={form.imagenUrl} alt="preview" className="mt-2 w-32 h-24 object-cover rounded" /> : <div className="mt-2 w-32 h-24 bg-gray-100 flex items-center justify-center">Sin imagen</div>}
+        </div>
 
         <div className="col-span-2 flex gap-2">
           <button className="bg-blue-600 text-white px-4 py-2 rounded">Guardar</button>

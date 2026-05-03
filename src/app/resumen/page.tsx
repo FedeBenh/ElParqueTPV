@@ -17,7 +17,13 @@ export default function Page() {
 
   useEffect(() => {
     fetchResumen()
+    fetch('/api/caja').then((r) => r.json()).then((data) => {
+      const abierta = (data || []).find((c: any) => c.estado === 'ABIERTA')
+      setCajaActiva(abierta || null)
+    }).catch(() => {})
   }, [])
+
+  const [cajaActiva, setCajaActiva] = useState<any | null>(null)
 
   if (!resumen) return <div>Cargando...</div>
 
@@ -57,6 +63,32 @@ export default function Page() {
           <div className="text-xl font-bold">{Number(resumen.beneficioEstimado || 0).toFixed(2)} €</div>
         </div>
       </div>
+
+      <div className="mt-4 mb-6">
+        <h3 className="text-lg font-semibold">Totales por método de pago</h3>
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          {['EFECTIVO','TARJETA','BIZUM','OTRO'].map((m) => {
+            const total = resumen.ventas.filter((v:any)=>v.metodoPago===m).reduce((s:any,v:any)=>s+Number(v.totalVenta||0),0)
+            return (
+              <div key={m} className="bg-white p-3 rounded shadow">
+                <div className="text-sm text-gray-500">{m}</div>
+                <div className="text-xl font-bold">{Number(total).toFixed(2)} €</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {cajaActiva && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">Caja activa</h3>
+          <div className="bg-white p-4 rounded shadow">
+            <div><strong>Apertura:</strong> {new Date(cajaActiva.fechaApertura).toLocaleString()}</div>
+            <div><strong>Efectivo inicial:</strong> {Number(cajaActiva.efectivoInicial).toFixed(2)} €</div>
+            <div><strong>Ventas asociadas:</strong> {Number(cajaActiva.ventas?.reduce((s:any,v:any)=>s+Number(v.totalVenta||0),0)).toFixed(2)} €</div>
+          </div>
+        </div>
+      )}
 
       <h3 className="text-lg font-semibold mb-2">Artículos con stock bajo</h3>
       <div className="bg-white rounded shadow p-4 mb-6">

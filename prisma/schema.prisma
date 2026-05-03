@@ -17,6 +17,9 @@ model Articulo {
   nombre           String
   descripcion      String?
   categoria        String?
+  categoriaId      Int?
+  categoriaRel     Categoria? @relation(fields: [categoriaId], references: [id])
+  imagenUrl        String?
   precioCompra     Decimal   @db.Decimal(10,2)
   precioVenta      Decimal   @db.Decimal(10,2)
   stockActual      Int
@@ -56,6 +59,8 @@ model Venta {
   metodoPago    MetodoPago?
   observaciones String?
   lineas        VentaLinea[]
+  cajaSesion    CajaSesion?   @relation(fields: [cajaSesionId], references: [id])
+  cajaSesionId  Int?
 }
 
 enum MetodoPago {
@@ -89,4 +94,72 @@ model MovimientoStock {
 enum TipoMovimiento {
   ENTRADA
   SALIDA
+}
+
+model Categoria {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique
+  descripcion String?
+  color     String?
+  imagenUrl String?
+  activa    Boolean   @default(true)
+  orden     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  articulos Articulo[]
+}
+
+model CajaSesion {
+  id                    Int                  @id @default(autoincrement())
+  fechaApertura         DateTime             @default(now())
+  fechaCierre           DateTime?
+  efectivoInicial       Decimal              @db.Decimal(10,2) @default("0.00")
+  efectivoEsperado      Decimal              @db.Decimal(10,2) @default("0.00")
+  efectivoContado       Decimal              @db.Decimal(10,2) @default("0.00")
+  diferencia            Decimal              @db.Decimal(10,2) @default("0.00")
+  estado                CajaEstado           @default(ABIERTA)
+  observacionesApertura String?
+  observacionesCierre   String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  denominaciones        CajaDenominacion[]
+  movimientos           CajaMovimiento[]
+  ventas                Venta[]
+}
+
+enum CajaEstado {
+  ABIERTA
+  CERRADA
+}
+
+model CajaDenominacion {
+  id           Int             @id @default(autoincrement())
+  cajaSesion   CajaSesion      @relation(fields: [cajaSesionId], references: [id])
+  cajaSesionId Int
+  tipo         DenominacionTipo
+  valor        Decimal         @db.Decimal(10,2)
+  cantidad     Int
+  total        Decimal         @db.Decimal(10,2)
+}
+
+enum DenominacionTipo {
+  MONEDA
+  BILLETE
+}
+
+model CajaMovimiento {
+  id           Int           @id @default(autoincrement())
+  cajaSesion   CajaSesion    @relation(fields: [cajaSesionId], references: [id])
+  cajaSesionId Int
+  tipo         MovimientoTipo
+  concepto     String
+  importe      Decimal       @db.Decimal(10,2)
+  fecha        DateTime      @default(now())
+  observaciones String?
+}
+
+enum MovimientoTipo {
+  ENTRADA
+  SALIDA
+  AJUSTE
 }

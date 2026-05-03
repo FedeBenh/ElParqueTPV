@@ -43,8 +43,14 @@ export default function Page() {
       <h2 className="text-2xl font-semibold mb-4">Nueva compra</h2>
       <form onSubmit={submit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <input placeholder="Proveedor" value={form.proveedor} onChange={(e) => setForm({ ...form, proveedor: e.target.value })} className="border p-2 rounded" />
-          <input placeholder="Observaciones" value={form.observaciones} onChange={(e) => setForm({ ...form, observaciones: e.target.value })} className="border p-2 rounded" />
+          <div>
+            <label className="block text-sm mb-1">Proveedor</label>
+            <input placeholder="Proveedor" value={form.proveedor} onChange={(e) => setForm({ ...form, proveedor: e.target.value })} className="border p-2 rounded w-full" />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Observaciones</label>
+            <input placeholder="Observaciones" value={form.observaciones} onChange={(e) => setForm({ ...form, observaciones: e.target.value })} className="border p-2 rounded w-full" />
+          </div>
         </div>
 
         <div>
@@ -55,15 +61,26 @@ export default function Page() {
 
           <div className="space-y-2">
             {lineas.map((ln, i) => (
-              <div key={i} className="flex gap-2">
-                <select value={ln.articuloId} onChange={(e) => updateLinea(i, { articuloId: Number(e.target.value) })} className="border p-2 rounded">
-                  {articulos.map((a) => (
-                    <option key={a.id} value={a.id}>{a.nombre} ({a.codigo})</option>
-                  ))}
-                </select>
-                <input type="number" min={1} value={ln.cantidad} onChange={(e) => updateLinea(i, { cantidad: Number(e.target.value) })} className="border p-2 rounded w-24" />
-                <input type="number" step="0.01" value={ln.precioCompra} onChange={(e) => updateLinea(i, { precioCompra: Number(e.target.value) })} className="border p-2 rounded w-32" />
-                <button type="button" onClick={() => removeLinea(i)} className="text-red-600">Eliminar</button>
+              <div key={i} className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <label className="block text-sm mb-1">Artículo</label>
+                  <select value={ln.articuloId} onChange={(e) => updateLinea(i, { articuloId: Number(e.target.value) })} className="border p-2 rounded w-full">
+                    {articulos.map((a) => (
+                      <option key={a.id} value={a.id}>{a.nombre} ({a.codigo})</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Cantidad</label>
+                  <input type="number" min={1} value={ln.cantidad} onChange={(e) => updateLinea(i, { cantidad: Number(e.target.value) })} className="border p-2 rounded w-24" />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Precio</label>
+                  <input type="number" step="0.01" value={ln.precioCompra} onChange={(e) => updateLinea(i, { precioCompra: Number(e.target.value) })} className="border p-2 rounded w-32" />
+                </div>
+                <div>
+                  <button type="button" onClick={() => removeLinea(i)} className="text-red-600">Eliminar</button>
+                </div>
               </div>
             ))}
           </div>

@@ -20,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/ventas" className="block p-2 rounded hover:bg-gray-100">Ventas</Link>
               <Link href="/tpv" className="block p-2 rounded hover:bg-gray-100">TPV</Link>
               <Link href="/resumen" className="block p-2 rounded hover:bg-gray-100">Resumen</Link>
+              <Link href="/caja" className="block p-2 rounded hover:bg-gray-100">Caja</Link>
             </nav>
           </aside>
           <main className="flex-1 p-6">{children}</main>
