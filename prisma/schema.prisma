@@ -1,0 +1,92 @@
+// Esquema Prisma para tienda de alimentación
+// PostgreSQL compatible con Vercel (Neon/Supabase)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Articulo {
+  id               Int       @id @default(autoincrement())
+  codigo           String    @unique
+  nombre           String
+  descripcion      String?
+  categoria        String?
+  precioCompra     Decimal   @db.Decimal(10,2)
+  precioVenta      Decimal   @db.Decimal(10,2)
+  stockActual      Int
+  stockMinimo      Int
+  activo           Boolean   @default(true)
+  fechaAlta        DateTime  @default(now())
+  fechaModificacion DateTime @updatedAt
+  comprasLineas    CompraLinea[]
+  ventasLineas     VentaLinea[]
+  movimientos      MovimientoStock[]
+}
+
+model Compra {
+  id            Int           @id @default(autoincrement())
+  fecha         DateTime      @default(now())
+  proveedor     String?
+  totalCompra   Decimal       @db.Decimal(10,2)
+  observaciones String?
+  lineas        CompraLinea[]
+}
+
+model CompraLinea {
+  id         Int      @id @default(autoincrement())
+  compra     Compra   @relation(fields: [compraId], references: [id])
+  compraId   Int
+  articulo   Articulo @relation(fields: [articuloId], references: [id])
+  articuloId Int
+  cantidad   Int
+  precioCompra Decimal @db.Decimal(10,2)
+  subtotal   Decimal   @db.Decimal(10,2)
+}
+
+model Venta {
+  id            Int           @id @default(autoincrement())
+  fecha         DateTime      @default(now())
+  totalVenta    Decimal       @db.Decimal(10,2)
+  metodoPago    MetodoPago?
+  observaciones String?
+  lineas        VentaLinea[]
+}
+
+enum MetodoPago {
+  EFECTIVO
+  TARJETA
+  BIZUM
+  OTRO
+}
+
+model VentaLinea {
+  id         Int      @id @default(autoincrement())
+  venta      Venta    @relation(fields: [ventaId], references: [id])
+  ventaId    Int
+  articulo   Articulo @relation(fields: [articuloId], references: [id])
+  articuloId Int
+  cantidad   Int
+  precioVenta Decimal @db.Decimal(10,2)
+  subtotal   Decimal  @db.Decimal(10,2)
+}
+
+model MovimientoStock {
+  id         Int      @id @default(autoincrement())
+  articulo   Articulo @relation(fields: [articuloId], references: [id])
+  articuloId Int
+  tipo       TipoMovimiento
+  cantidad   Int
+  fecha      DateTime @default(now())
+  referencia String?
+}
+
+enum TipoMovimiento {
+  ENTRADA
+  SALIDA
+}
